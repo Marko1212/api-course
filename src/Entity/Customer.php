@@ -64,13 +64,38 @@ class Customer
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="customers")
-     * @Groups({"customers_read", "invoices_read"})
+     * @Groups({"customers_read"})
      */
     private $user;
 
     public function __construct()
     {
         $this->invoices = new ArrayCollection();
+    }
+
+    /**
+     * Permet de récupérer le montant total des invoices
+     * @Groups({"customers_read"})
+     *
+     * @return float
+     */
+    public function getTotalAmount(): float {
+        return array_reduce($this->invoices->toArray(), function($total, $invoice) {
+                return $total + $invoice->getAmount(); 
+        }, 0);
+    }
+
+    /**
+     * Récupérer le montant total non payé des invoices (montant total hors factures payées ou annulées)
+     * @Groups({"customers_read"})
+     * @return float
+     */
+    public function getUnpaidAmount(): float {
+        return array_reduce($this->invoices->toArray(), function($total, $invoice) {
+            return $total + ($invoice->getStatus() === "PAID" || $invoice->getStatus()  === "CANCELLED" ? 0 : $invoice->getAmount());
+
+        }, 0);
+
     }
 
     public function getId(): ?int
