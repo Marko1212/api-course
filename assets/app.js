@@ -14,10 +14,17 @@ import './styles/app.css';
 
 // start the Stimulus application
 import './bootstrap';
+import Navbar from './components/Navbar';
+import HomePage from './pages/HomePage';
 
 const App = () => {
-    return <h1>Bonjour à tous !</h1>
-}
+    return <>
+        < Navbar />
+        <div className="container pt-5">
+            <HomePage />
+        </div>
+    </>
+};
 
 const rootElement = document.querySelector("#app");
 ReactDOM.render(<App />, rootElement);
