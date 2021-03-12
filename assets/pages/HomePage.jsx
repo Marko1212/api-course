@@ -2,7 +2,7 @@ import React from "react";
 
 const HomePage = (props) => {
   return (
-    <div class="jumbotron">
+    <div className="jumbotron">
       <h1 className="display-3">Hello, world!</h1>
       <p className="lead">
         This is a simple hero unit, a simple jumbotron-style component for

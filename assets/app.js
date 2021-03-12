@@ -8,6 +8,7 @@
 // les imports importants
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { HashRouter, Switch, Route } from 'react-router-dom';
 
 // any CSS you import will output into a single css file (app.css in this case)
 import './styles/app.css';
@@ -16,14 +17,18 @@ import './styles/app.css';
 import './bootstrap';
 import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
+import CustomersPage from './pages/CustomersPage';
 
 const App = () => {
-    return <>
+    return <HashRouter>
         < Navbar />
-        <div className="container pt-5">
-            <HomePage />
-        </div>
-    </>
+        <main className="container pt-5">
+            <Switch>
+                <Route path="/customers" component={CustomersPage} />
+                <Route path="/" component={HomePage} />
+            </Switch>
+        </main>
+    </HashRouter>
 };
 
 const rootElement = document.querySelector("#app");
