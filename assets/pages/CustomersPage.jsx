@@ -12,8 +12,23 @@ const CustomersPage = (props) => {
   }, []);
 
   const handleDelete = (id) => {
-    console.log(id);
-    axios.delete("http://localhost:8000/api/customers/" + id).then(response=>console.log(response));
+
+    const originalCustomers = [...customers];
+
+    //1. l'approche optimiste
+
+    setCustomers(customers.filter(customer => customer.id !== id));
+
+
+    //2. l'approche pessimiste
+
+
+    axios.delete("http://localhost:8000/api/customers/" + id)
+    .then(response=>console.log("ok"))
+    .catch(error => {
+      setCustomers(originalCustomers);
+      console.log(error.response);
+    });
   };
 
   return (
