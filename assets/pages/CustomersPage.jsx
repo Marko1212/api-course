@@ -3,7 +3,7 @@ import axios from "axios";
 
 const CustomersPage = (props) => {
   const [customers, setCustomers] = useState([]);
-  const [currentPage, setCurrentPage] = useState(3);
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     axios
@@ -63,7 +63,7 @@ const CustomersPage = (props) => {
           </tr>
         </thead>
         <tbody>
-          {customers.map((customer) => (
+          {paginatedCustomers.map((customer) => (
             <tr key={customer.id}>
               <td>{customer.id}</td>
               <td>
