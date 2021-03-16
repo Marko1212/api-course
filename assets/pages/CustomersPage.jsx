@@ -3,6 +3,8 @@ import axios from "axios";
 
 const CustomersPage = (props) => {
   const [customers, setCustomers] = useState([]);
+  const [currentPage, setCurrentPage] = useState(3);
+
   useEffect(() => {
     axios
       .get("http://localhost:8000/api/customers")
@@ -12,24 +14,35 @@ const CustomersPage = (props) => {
   }, []);
 
   const handleDelete = (id) => {
-
     const originalCustomers = [...customers];
 
     //1. l'approche optimiste
 
-    setCustomers(customers.filter(customer => customer.id !== id));
-
+    setCustomers(customers.filter((customer) => customer.id !== id));
 
     //2. l'approche pessimiste
 
-
-    axios.delete("http://localhost:8000/api/customers/" + id)
-    .then(response=>console.log("ok"))
-    .catch(error => {
-      setCustomers(originalCustomers);
-      console.log(error.response);
-    });
+    axios
+      .delete("http://localhost:8000/api/customers/" + id)
+      .then((response) => console.log("ok"))
+      .catch((error) => {
+        setCustomers(originalCustomers);
+        console.log(error.response);
+      });
   };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const itemsPerPage = 10;
+  const pagesCount = Math.ceil(customers.length / itemsPerPage);
+  const pages = [];
+
+  for (let index = 1; index <= pagesCount; index++) {
+    pages.push(index);
+  }
+  console.log(pages);
 
   return (
     <>
@@ -78,6 +91,27 @@ const CustomersPage = (props) => {
           ))}
         </tbody>
       </table>
+      <div>
+        <ul className="pagination pagination-sm">
+          <li className="page-item disabled">
+            <button className="page-link" onClick={() => handlePageChange(currentPage - 1)}>
+              &laquo;
+            </button>
+          </li>
+          {pages.map((page) => (
+            <li key = {page} className={"page-item" + (currentPage === page && " active")}>
+              <button className="page-link" onClick = {() => handlePageChange(page)}>
+                {page}
+              </button>
+            </li>
+          ))}
+          <li className="page-item">
+            <button className="page-link" onClick={() => handlePageChange(currentPage + 1)}>
+              &raquo;
+            </button>
+          </li>
+        </ul>
+      </div>
     </>
   );
 };
