@@ -42,7 +42,10 @@ const CustomersPage = (props) => {
   for (let index = 1; index <= pagesCount; index++) {
     pages.push(index);
   }
-  console.log(pages);
+  
+  // d'où on part (start) pendant combien (itemsPerPage)
+  const start = currentPage*itemsPerPage - itemsPerPage;
+  const paginatedCustomers = customers.slice(start, start + itemsPerPage);
 
   return (
     <>
@@ -93,7 +96,7 @@ const CustomersPage = (props) => {
       </table>
       <div>
         <ul className="pagination pagination-sm">
-          <li className="page-item disabled">
+          <li className={"page-item"  + (currentPage === 1 && " disabled")}>
             <button className="page-link" onClick={() => handlePageChange(currentPage - 1)}>
               &laquo;
             </button>
@@ -105,7 +108,7 @@ const CustomersPage = (props) => {
               </button>
             </li>
           ))}
-          <li className="page-item">
+          <li className={"page-item"  + (currentPage === pagesCount && " disabled")}>
             <button className="page-link" onClick={() => handlePageChange(currentPage + 1)}>
               &raquo;
             </button>
