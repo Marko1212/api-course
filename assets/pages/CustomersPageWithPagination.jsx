@@ -4,15 +4,23 @@ import Pagination from "../components/Pagination";
 
 const CustomersPageWithPagination = (props) => {
   const [customers, setCustomers] = useState([]);
+  const [totalItems, setTotalItems] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/api/customers")
-      .then((response) => response.data["hydra:member"])
-      .then((data) => setCustomers(data))
+      .get(
+        `http://localhost:8000/api/customers?pagination=true&count=${itemsPerPage}&page=${currentPage}`
+      )
+      .then((response) => {
+        setCustomers(response.data["hydra:member"]);
+        setTotalItems(response.data["hydra:totalItems"]);
+        setLoading(false);
+      })
       .catch((error) => console.log(error.response));
-  }, []);
+  }, [currentPage]);
 
   const handleDelete = (id) => {
     const originalCustomers = [...customers];
@@ -34,10 +42,14 @@ const CustomersPageWithPagination = (props) => {
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
+    setLoading(true);
   };
 
-  const itemsPerPage = 10;
-  const paginatedCustomers = Pagination.getData(customers, currentPage, itemsPerPage);
+  const paginatedCustomers = Pagination.getData(
+    customers,
+    currentPage,
+    itemsPerPage
+  );
 
   return (
     <>
@@ -55,7 +67,12 @@ const CustomersPageWithPagination = (props) => {
           </tr>
         </thead>
         <tbody>
-          {paginatedCustomers.map((customer) => (
+          {loading && (
+            <tr>
+              <td>Chargement ...</td>
+            </tr>
+          )}
+          {!loading && customers.map((customer) => (
             <tr key={customer.id}>
               <td>{customer.id}</td>
               <td>
@@ -86,7 +103,12 @@ const CustomersPageWithPagination = (props) => {
           ))}
         </tbody>
       </table>
-      <Pagination currentPage = {currentPage} itemsPerPage = {itemsPerPage} length = {customers.length} onPageChanged = {handlePageChange} />
+      <Pagination
+        currentPage={currentPage}
+        itemsPerPage={itemsPerPage}
+        length={totalItems}
+        onPageChanged={handlePageChange}
+      />
     </>
   );
 };
