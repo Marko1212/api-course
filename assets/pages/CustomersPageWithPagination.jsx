@@ -41,8 +41,10 @@ const CustomersPageWithPagination = (props) => {
   };
 
   const handlePageChange = (page) => {
+    if (page !== currentPage) {
     setCurrentPage(page);
     setLoading(true);
+    }
   };
 
   const paginatedCustomers = Pagination.getData(
