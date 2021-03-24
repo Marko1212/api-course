@@ -19,12 +19,14 @@ import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
 import CustomersPage from './pages/CustomersPage';
 import CustomersPageWithPagination from './pages/CustomersPageWithPagination';
+import InvoicesPage from './pages/InvoicesPage';
 
 const App = () => {
     return <HashRouter>
         < Navbar />
         <main className="container pt-5">
             <Switch>
+                <Route path="/invoices" component={InvoicesPage} />
                 <Route path="/customers" component={CustomersPage} />
                 <Route path="/" component={HomePage} />
             </Switch>
