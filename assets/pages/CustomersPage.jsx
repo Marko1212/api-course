@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import Pagination from "../components/Pagination";
+import CustomersAPI from "../services/customersAPI";
+
 
 const CustomersPage = (props) => {
   const [customers, setCustomers] = useState([]);
@@ -8,9 +9,8 @@ const CustomersPage = (props) => {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    axios
-      .get("http://localhost:8000/api/customers")
-      .then((response) => response.data["hydra:member"])
+    CustomersAPI
+      .findAll()
       .then((data) => setCustomers(data))
       .catch((error) => console.log(error.response));
   }, []);
@@ -24,8 +24,7 @@ const CustomersPage = (props) => {
 
     //2. l'approche pessimiste
 
-    axios
-      .delete("http://localhost:8000/api/customers/" + id)
+    CustomersAPI.delete(id)
       .then((response) => console.log("ok"))
       .catch((error) => {
         setCustomers(originalCustomers);
@@ -53,7 +52,11 @@ const CustomersPage = (props) => {
       (c.company && c.company.toLowerCase().includes(search.toLowerCase()))
   );
 
-  const paginatedCustomers = Pagination.getData(filteredCustomers, currentPage, itemsPerPage);
+  const paginatedCustomers = Pagination.getData(
+    filteredCustomers,
+    currentPage,
+    itemsPerPage
+  );
 
   return (
     <>
