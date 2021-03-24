@@ -1,7 +1,28 @@
 import React, { useEffect, useState } from "react";
 import Pagination from "../components/Pagination";
+import axios from "axios";
 
 const InvoicesPage = (props) => {
+
+    const [invoices, setInvoices] = useState([]);
+
+    const fetchInvoices = async () => {
+
+        try {
+            const data = await axios.get("http://localhost:8000/api/invoices").then(response => response.data["hydra:member"]);
+            setInvoices(data);
+        } catch(error) {
+            console.log(error.response);
+        }
+    };
+
+    useEffect(() => {
+        fetchInvoices();
+    }, []);
+
+
+
+
   return (
     <>
       <h1>Liste des factures</h1>
