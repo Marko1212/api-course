@@ -18,15 +18,15 @@ const CustomersPage = (props) => {
   };
 
   //Au chargement du composant, on va chercher les customers
-  useEffect(() => fetchCustomers(), []);
+  useEffect(() => {
+    fetchCustomers();
+  }, []);
 
   //Gestion de la suppression d'un customer
   const handleDelete = async (id) => {
     const originalCustomers = [...customers];
 
-
     setCustomers(customers.filter((customer) => customer.id !== id));
-
 
     try {
       await CustomersAPI.delete(id);
@@ -36,11 +36,11 @@ const CustomersPage = (props) => {
   };
 
   //Gestion du changement de page
-  const handlePageChange = page => setCurrentPage(page);
+  const handlePageChange = (page) => setCurrentPage(page);
 
   //Gestion de la recherche
-  const handleSearch = ({currentTarget}) => {
-    setSearch( currentTarget.value);
+  const handleSearch = ({ currentTarget }) => {
+    setSearch(currentTarget.value);
     setCurrentPage(1);
   };
 
