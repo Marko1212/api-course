@@ -2,48 +2,51 @@ import React, { useEffect, useState } from "react";
 import Pagination from "../components/Pagination";
 import CustomersAPI from "../services/customersAPI";
 
-
 const CustomersPage = (props) => {
   const [customers, setCustomers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
 
-  useEffect(() => {
-    CustomersAPI
-      .findAll()
-      .then((data) => setCustomers(data))
-      .catch((error) => console.log(error.response));
-  }, []);
+  //Permet d'aller récupérer les customers
+  const fetchCustomers = async () => {
+    try {
+      const data = await CustomersAPI.findAll();
+      setCustomers(data);
+    } catch (error) {
+      console.log(error.response);
+    }
+  };
 
-  const handleDelete = (id) => {
+  //Au chargement du composant, on va chercher les customers
+  useEffect(() => fetchCustomers(), []);
+
+  //Gestion de la suppression d'un customer
+  const handleDelete = async (id) => {
     const originalCustomers = [...customers];
 
-    //1. l'approche optimiste
 
     setCustomers(customers.filter((customer) => customer.id !== id));
 
-    //2. l'approche pessimiste
 
-    CustomersAPI.delete(id)
-      .then((response) => console.log("ok"))
-      .catch((error) => {
-        setCustomers(originalCustomers);
-        console.log(error.response);
-      });
+    try {
+      await CustomersAPI.delete(id);
+    } catch (error) {
+      setCustomers(originalCustomers);
+    }
   };
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
+  //Gestion du changement de page
+  const handlePageChange = page => setCurrentPage(page);
 
-  const handleSearch = (event) => {
-    const value = event.currentTarget.value;
-    setSearch(value);
+  //Gestion de la recherche
+  const handleSearch = ({currentTarget}) => {
+    setSearch( currentTarget.value);
     setCurrentPage(1);
   };
 
   const itemsPerPage = 10;
 
+  //Filtrage des customers en fonction de la recherche
   const filteredCustomers = customers.filter(
     (c) =>
       c.firstName.toLowerCase().includes(search.toLowerCase()) ||
@@ -52,6 +55,7 @@ const CustomersPage = (props) => {
       (c.company && c.company.toLowerCase().includes(search.toLowerCase()))
   );
 
+  //Pagination des données
   const paginatedCustomers = Pagination.getData(
     filteredCustomers,
     currentPage,
