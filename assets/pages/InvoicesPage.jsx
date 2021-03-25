@@ -3,25 +3,22 @@ import Pagination from "../components/Pagination";
 import axios from "axios";
 
 const InvoicesPage = (props) => {
+  const [invoices, setInvoices] = useState([]);
 
-    const [invoices, setInvoices] = useState([]);
+  const fetchInvoices = async () => {
+    try {
+      const data = await axios
+        .get("http://localhost:8000/api/invoices")
+        .then((response) => response.data["hydra:member"]);
+      setInvoices(data);
+    } catch (error) {
+      console.log(error.response);
+    }
+  };
 
-    const fetchInvoices = async () => {
-
-        try {
-            const data = await axios.get("http://localhost:8000/api/invoices").then(response => response.data["hydra:member"]);
-            setInvoices(data);
-        } catch(error) {
-            console.log(error.response);
-        }
-    };
-
-    useEffect(() => {
-        fetchInvoices();
-    }, []);
-
-
-
+  useEffect(() => {
+    fetchInvoices();
+  }, []);
 
   return (
     <>
@@ -39,21 +36,23 @@ const InvoicesPage = (props) => {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>1</td>
-            <td>
-              <a href="#">Marko Askovic</a>
-            </td>
-            <td className="text-center">21/04/2020</td>
-            <td className="text-center">
-              <span className="badge badge-success">Payée</span>
-            </td>
-            <td className="text-center">1 200,00 €</td>
-            <td>
-              <button className="btn btn-sm btn-primary mr-1">Editer</button>
-              <button className="btn btn-sm btn-danger">Supprimer</button>
-            </td>
-          </tr>
+          {invoices.map((invoice) => (
+            <tr key={invoice.id}>
+              <td>{invoice.chrono}</td>
+              <td>
+                <a href="#">{invoice.customer.firstName} {invoice.customer.lastName}</a>
+              </td>
+              <td className="text-center">{invoice.sentAt}</td>
+              <td className="text-center">
+                <span className="badge badge-success">{invoice.status}</span>
+              </td>
+              <td className="text-center">{invoice.amount.toLocaleString()} €</td>
+              <td>
+                <button className="btn btn-sm btn-primary mr-1">Editer</button>
+                <button className="btn btn-sm btn-danger">Supprimer</button>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </>
