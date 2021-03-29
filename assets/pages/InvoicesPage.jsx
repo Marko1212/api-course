@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from "react";
 import Pagination from "../components/Pagination";
 import axios from "axios";
+import moment from "moment";
+
+const STATUS_CLASSES = {
+  PAID : "success",
+  SENT : "primary",
+  CANCELLED : "danger"
+}
 
 const InvoicesPage = (props) => {
   const [invoices, setInvoices] = useState([]);
@@ -19,6 +26,8 @@ const InvoicesPage = (props) => {
   useEffect(() => {
     fetchInvoices();
   }, []);
+
+  const formatDate = (str) => moment(str).format('DD/MM/YYYY');
 
   return (
     <>
@@ -42,9 +51,9 @@ const InvoicesPage = (props) => {
               <td>
                 <a href="#">{invoice.customer.firstName} {invoice.customer.lastName}</a>
               </td>
-              <td className="text-center">{invoice.sentAt}</td>
+              <td className="text-center">{formatDate(invoice.sentAt)}</td>
               <td className="text-center">
-                <span className="badge badge-success">{invoice.status}</span>
+                <span className={"badge badge-" + STATUS_CLASSES[invoice.status]}>{invoice.status}</span>
               </td>
               <td className="text-center">{invoice.amount.toLocaleString()} €</td>
               <td>
