@@ -1,7 +1,8 @@
+import moment from "moment";
 import React, { useEffect, useState } from "react";
 import Pagination from "../components/Pagination";
-import axios from "axios";
-import moment from "moment";
+import InvoicesAPI from "../services/invoicesAPI";
+
 
 const STATUS_CLASSES = {
   PAID: "success",
@@ -19,18 +20,19 @@ const InvoicesPage = (props) => {
   const [invoices, setInvoices] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
+  const itemsPerPage = 10;
 
+  // Récupération des invoices auprès de l'API
   const fetchInvoices = async () => {
     try {
-      const data = await axios
-        .get("http://localhost:8000/api/invoices")
-        .then((response) => response.data["hydra:member"]);
+      const data = await InvoicesAPI.findAll();
       setInvoices(data);
     } catch (error) {
       console.log(error.response);
     }
   };
 
+  // Charger les invoices au chargement du composant
   useEffect(() => {
     fetchInvoices();
   }, []);
@@ -44,25 +46,24 @@ const InvoicesPage = (props) => {
     setCurrentPage(1);
   };
 
-  // Gestion de la suppression d'un invoice
+  // Gestion de la suppression
   const handleDelete = async (id) => {
     const originalInvoices = [...invoices];
 
     setInvoices(invoices.filter(invoice => invoice.id !== id));
 
     try {
-      await axios.delete("http://localhost:8000/api/invoices/" + id);
+      await InvoicesAPI.delete(id);
     } catch (error) {
       console.log(error.response);
       setInvoices(originalInvoices);
     }
   };
 
-  const itemsPerPage = 10;
-
+  // Gestion du format de date
   const formatDate = (str) => moment(str).format("DD/MM/YYYY");
 
-  //Filtrage des invoices en fonction de la recherche
+  // Filtrage des invoices en fonction de la recherche
   const filteredInvoices = invoices.filter(
     (i) =>
       i.customer.firstName.toLowerCase().includes(search.toLowerCase()) ||
