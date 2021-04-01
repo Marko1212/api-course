@@ -6,7 +6,7 @@
  */
 
 // les imports importants
-import React from 'react';
+import React, {useState} from 'react';
 import ReactDOM from 'react-dom';
 import { HashRouter, Switch, Route } from 'react-router-dom';
 
@@ -26,11 +26,17 @@ import AuthAPI from "./services/authAPI";
 AuthAPI.setup();
 
 const App = () => {
+
+    //TODO : Il faudrait par défaut qu'on demande à notre AuthAPI si on est connecté ou pas
+    const [isAuthenticated, setIsAuthenticated] = useState(true);
+
+    console.log(isAuthenticated);
+
     return <HashRouter>
-        < Navbar />
+        < Navbar isAuthenticated={isAuthenticated} onLogout = {setIsAuthenticated}/>
         <main className="container pt-5">
             <Switch>
-                <Route path="/login" component={LoginPage} />
+                <Route path="/login" render={props => (<LoginPage onLogin={setIsAuthenticated} />)} />
                 <Route path="/invoices" component={InvoicesPage} />
                 <Route path="/customers" component={CustomersPage} />
                 <Route path="/" component={HomePage} />
