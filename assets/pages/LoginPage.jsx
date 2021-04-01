@@ -1,10 +1,14 @@
 import React, { useState } from "react";
+import axios from "axios";
+import CustomersAPI from "../services/customersAPI";
 
 const LoginPage = (props) => {
   const [credentials, setCredentials] = useState({
     username: "",
     password: ""
   });
+  
+  const [error, setError] = useState("");
 
   const handleChange = (event) => {
       const value = event.currentTarget.value;
@@ -13,8 +17,24 @@ const LoginPage = (props) => {
       setCredentials({...credentials, [name]: value});
   }
 
-  const handleSubmit = event => {
+  const handleSubmit = async event => {
       event.preventDefault();
+
+      try {
+        const token = await axios.post("http://localhost:8000/api/login_check", credentials)
+        .then(response => response.data.token);
+
+        setError("");
+
+        // Je stocke le token dans mon localStorage
+        window.localStorage.setItem("authToken", token)
+        //On prévient Axios qu'on a maintenant un header par défaut sur toutes nos futures requêtes HTTP
+        axios.defaults.headers["Authorization"] = "Bearer " + token;
+
+        
+      } catch(error) {
+          setError("Aucun compte ne possède cette adresse email ou alors les informations ne correspondent pas !");
+      }
       console.log(credentials);
   }
   return (
@@ -29,10 +49,11 @@ const LoginPage = (props) => {
             onChange={handleChange}
             type="email"
             placeholder="Adresse email de connexion"
-            name="username"
-            className="form-control"
+            name="username" 
+            className={"form-control" + (error && " is-invalid")}
             id="username"
           />
+          {error && <p className="invalid-feedback">{error}</p>}
         </div>
         <div className="form-group">
           <label htmlFor="password">Mot de passe</label>
