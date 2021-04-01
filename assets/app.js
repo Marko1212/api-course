@@ -21,6 +21,9 @@ import CustomersPage from './pages/CustomersPage';
 import CustomersPageWithPagination from './pages/CustomersPageWithPagination';
 import InvoicesPage from './pages/InvoicesPage';
 import LoginPage from './pages/LoginPage';
+import AuthAPI from "./services/authAPI";
+
+AuthAPI.setup();
 
 const App = () => {
     return <HashRouter>
