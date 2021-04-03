@@ -1,7 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import AuthContext from "../contexts/AuthContext";
 import AuthAPI from "../services/authAPI";
 
-const LoginPage = ({onLogin, history}) => {
+const LoginPage = ({history}) => {
+
+  const {setIsAuthenticated} = useContext(AuthContext);
+
   const [credentials, setCredentials] = useState({
     username: "",
     password: ""
@@ -24,7 +28,7 @@ const LoginPage = ({onLogin, history}) => {
         
         await AuthAPI.authenticate(credentials);
         setError("");
-        onLogin(true);
+        setIsAuthenticated(true);
         history.replace("/customers");
 
       } catch(error) {
