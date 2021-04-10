@@ -31,12 +31,20 @@ const CustomerPage = (props) => {
         
         try {
            const response = await axios.post("http://localhost:8000/api/customers", customer);
-           console.log(response.data);
+           setErrors({})
+          
         } catch(error) {
-            console.log(error.response);
+            if(error.response.data.violations) {
+                const apiErrors = {};
+                error.response.data.violations.forEach(violation => {
+                    apiErrors[violation.propertyPath] = violation.message;
+                });
+
+                setErrors(apiErrors);
+            }
         }
 
-    }
+    };
 
     return ( 
     
