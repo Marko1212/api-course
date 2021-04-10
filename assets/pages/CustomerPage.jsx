@@ -7,7 +7,7 @@ const CustomerPage = (props) => {
   const { id = "new" } = props.match.params;
 
   const [customer, setCustomer] = useState({
-    lastName: "Toto",
+    lastName: "",
     firstName: "",
     email: "",
     company: "",
@@ -56,12 +56,17 @@ const CustomerPage = (props) => {
           "http://localhost:8000/api/customers/" + id,
           customer
         );
-        console.log(response.data);
+
+       // TODO : Flash notification de succès
+
       } else {
         const response = await axios.post(
           "http://localhost:8000/api/customers",
           customer
         );
+
+        // TODO : Flash notification de succès
+        props.history.replace("/customers");
       }
       setErrors({});
     } catch (error) {
@@ -72,6 +77,8 @@ const CustomerPage = (props) => {
         });
 
         setErrors(apiErrors);
+
+        // TODO : Flash notification d'erreurs
       }
     }
   };
