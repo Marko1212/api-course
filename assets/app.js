@@ -22,6 +22,7 @@ import LoginPage from './pages/LoginPage';
 import AuthAPI from "./services/authAPI";
 // any CSS you import will output into a single css file (app.css in this case)
 import './styles/app.css';
+import InvoicePage from './pages/InvoicePage';
 
 
 
@@ -45,6 +46,7 @@ const App = () => {
                 <main className="container pt-5">
                     <Switch>
                         <Route path="/login" component={LoginPage} />
+                        <PrivateRoute path="/invoices/:id" component={InvoicePage} />
                         <PrivateRoute path="/invoices" component={InvoicesPage} />
                         <PrivateRoute path="/customers/:id" component={CustomerPage} />
                         <PrivateRoute path="/customers" component={CustomersPage} />
