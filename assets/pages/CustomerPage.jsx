@@ -27,9 +27,10 @@ const CustomerPage = (props) => {
       const data = await axios
         .get("http://localhost:8000/api/customers/" + id)
         .then((response) => response.data);
-        console.log(data);
-    } catch(error) {
-        console.log(error.response);
+      const { firstName, lastName, email, company } = data;
+      setCustomer({ firstName, lastName, email, company });
+    } catch (error) {
+      console.log(error.response);
     }
   };
 
@@ -50,10 +51,18 @@ const CustomerPage = (props) => {
     event.preventDefault();
 
     try {
-      const response = await axios.post(
-        "http://localhost:8000/api/customers",
-        customer
-      );
+      if (editing) {
+        const response = await axios.put(
+          "http://localhost:8000/api/customers/" + id,
+          customer
+        );
+        console.log(response.data);
+      } else {
+        const response = await axios.post(
+          "http://localhost:8000/api/customers",
+          customer
+        );
+      }
       setErrors({});
     } catch (error) {
       if (error.response.data.violations) {
