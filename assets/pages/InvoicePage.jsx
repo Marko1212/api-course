@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Field from "../components/forms/Field";
 import Select from "../components/forms/Select";
 import CustomersAPI from "../services/customersAPI";
+import axios from "axios";
 
 const InvoicePage = (props) => {
   const [invoice, setInvoice] = useState({
@@ -39,10 +40,27 @@ const InvoicePage = (props) => {
     setInvoice({ ...invoice, [name]: value });
   };
 
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+   try {
+
+    const response = axios.post("http://localhost:8000/api/invoices", {...invoice, customer : `/api/customers/${invoice.customer}`});
+    console.log(response);
+
+   } catch(error) {
+
+    console.log(error.response);
+
+   }
+
+
+  };
+
   return (
     <>
       <h1>Création d'une facture</h1>
-      <form>
+      <form onSubmit = {handleSubmit}>
         <Field
           name="amount"
           type="number"
