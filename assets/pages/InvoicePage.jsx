@@ -5,11 +5,11 @@ import Select from "../components/forms/Select";
 import CustomersAPI from "../services/customersAPI";
 import axios from "axios";
 
-const InvoicePage = (props) => {
+const InvoicePage = ({ history }) => {
   const [invoice, setInvoice] = useState({
     amount: "",
     customer: "",
-    status: "",
+    status: "SENT",
   });
 
   const [customers, setCustomers] = useState([]);
@@ -24,6 +24,10 @@ const InvoicePage = (props) => {
     try {
       const data = await CustomersAPI.findAll();
       setCustomers(data);
+
+      if (!invoice.customer) {
+        setInvoice({ ...invoice, customer: data[0].id });
+      }
     } catch (error) {
       console.log(error.response);
     }
@@ -43,24 +47,32 @@ const InvoicePage = (props) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-   try {
+    try {
+      const response = await axios.post("http://localhost:8000/api/invoices", {
+        ...invoice,
+        customer: `/api/customers/${invoice.customer}`,
+      });
+      // Flash notification succès
+      history.replace("/invoices");
+    } catch ({ response }) {
+      const { violations } = response.data;
+      if (violations) {
+        const apiErrors = {};
+        violations.forEach(({ propertyPath, message }) => {
+          apiErrors[propertyPath] = message;
+        });
 
-    const response = axios.post("http://localhost:8000/api/invoices", {...invoice, customer : `/api/customers/${invoice.customer}`});
-    console.log(response);
+        setErrors(apiErrors);
 
-   } catch(error) {
-
-    console.log(error.response);
-
-   }
-
-
+        // TODO : Flash notification d'erreurs
+      }
+    }
   };
 
   return (
     <>
       <h1>Création d'une facture</h1>
-      <form onSubmit = {handleSubmit}>
+      <form onSubmit={handleSubmit}>
         <Field
           name="amount"
           type="number"
