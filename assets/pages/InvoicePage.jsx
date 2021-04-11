@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Field from "../components/forms/Field";
 import Select from "../components/forms/Select";
+import CustomersAPI from "../services/customersAPI";
 
 const InvoicePage = (props) => {
   const [invoice, setInvoice] = useState({
@@ -10,11 +11,26 @@ const InvoicePage = (props) => {
     status: "",
   });
 
+  const [customers, setCustomers] = useState([]);
+
   const [errors, setErrors] = useState({
     amount: "",
     customer: "",
     status: "",
   });
+
+  const fetchCustomers = async () => {
+    try {
+      const data = await CustomersAPI.findAll();
+      setCustomers(data);
+    } catch (error) {
+      console.log(error.response);
+    }
+  };
+
+  useEffect(() => {
+    fetchCustomers();
+  }, []);
 
   // Gestion des changements des inputs dans le formulaire
   const handleChange = ({ currentTarget }) => {
@@ -44,8 +60,11 @@ const InvoicePage = (props) => {
           error={errors.customer}
           onChange={handleChange}
         >
-          <option value="1">Marko Askovic</option>
-          <option value="2">Olga Askovic</option>
+          {customers.map((customer) => (
+            <option key={customer.id} value={customer.id}>
+              {customer.firstName} {customer.lastName}
+            </option>
+          ))}
         </Select>
 
         <Select
@@ -64,7 +83,9 @@ const InvoicePage = (props) => {
           <button type="submit" className="btn btn-success">
             Enregistrer
           </button>
-          <Link to="/invoices" className="btn btn-link">Retour aux factures</Link>
+          <Link to="/invoices" className="btn btn-link">
+            Retour aux factures
+          </Link>
         </div>
       </form>
     </>
