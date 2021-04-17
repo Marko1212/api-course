@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import Pagination from "../components/Pagination";
 import InvoicesAPI from "../services/invoicesAPI";
 
-
 const STATUS_CLASSES = {
   PAID: "success",
   SENT: "primary",
@@ -51,7 +50,7 @@ const InvoicesPage = (props) => {
   const handleDelete = async (id) => {
     const originalInvoices = [...invoices];
 
-    setInvoices(invoices.filter(invoice => invoice.id !== id));
+    setInvoices(invoices.filter((invoice) => invoice.id !== id));
 
     try {
       await InvoicesAPI.delete(id);
@@ -82,11 +81,12 @@ const InvoicesPage = (props) => {
 
   return (
     <>
-    <div className="d-flex justify-content-between align-items-center">
-    <h1>Liste des factures</h1>
-    <Link className="btn btn-primary" to="/invoices/new">Créer une facture</Link>
-    </div>
-    
+      <div className="d-flex justify-content-between align-items-center">
+        <h1>Liste des factures</h1>
+        <Link className="btn btn-primary" to="/invoices/new">
+          Créer une facture
+        </Link>
+      </div>
 
       <div className="form-group">
         <input
@@ -130,8 +130,18 @@ const InvoicesPage = (props) => {
                 {invoice.amount.toLocaleString()} €
               </td>
               <td>
-                <button className="btn btn-sm btn-primary mr-1">Editer</button>
-                <button className="btn btn-sm btn-danger" onClick = {() => handleDelete(invoice.id)}>Supprimer</button>
+                <Link
+                  to={"/invoices/" + invoice.id}
+                  className="btn btn-sm btn-primary mr-1"
+                >
+                  Editer
+                </Link>
+                <button
+                  className="btn btn-sm btn-danger"
+                  onClick={() => handleDelete(invoice.id)}
+                >
+                  Supprimer
+                </button>
               </td>
             </tr>
           ))}

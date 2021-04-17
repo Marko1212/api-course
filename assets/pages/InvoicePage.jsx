@@ -5,7 +5,9 @@ import Select from "../components/forms/Select";
 import CustomersAPI from "../services/customersAPI";
 import axios from "axios";
 
-const InvoicePage = ({ history }) => {
+const InvoicePage = ({ history, match }) => {
+  const { id = "new" } = match.params;
+
   const [invoice, setInvoice] = useState({
     amount: "",
     customer: "",
@@ -13,7 +15,7 @@ const InvoicePage = ({ history }) => {
   });
 
   const [customers, setCustomers] = useState([]);
-
+  const [editing, setEditing] = useState(false);
   const [errors, setErrors] = useState({
     amount: "",
     customer: "",
@@ -33,9 +35,30 @@ const InvoicePage = ({ history }) => {
     }
   };
 
+  const fetchInvoice = async (id) => {
+    try {
+      const data = await axios
+        .get("http://localhost:8000/api/invoices/" + id)
+        .then((response) => response.data);
+
+      const { amount, status, customer } = data;
+
+      setInvoice({ amount, status, customer: customer.id });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     fetchCustomers();
   }, []);
+
+  useEffect(() => {
+    if (id !== "new") {
+      setEditing(true);
+      fetchInvoice(id);
+    }
+  }, [id]);
 
   // Gestion des changements des inputs dans le formulaire
   const handleChange = ({ currentTarget }) => {
@@ -48,14 +71,23 @@ const InvoicePage = ({ history }) => {
     event.preventDefault();
 
     try {
-      const response = await axios.post("http://localhost:8000/api/invoices", {
-        ...invoice,
-        customer: `/api/customers/${invoice.customer}`,
-      });
-      // Flash notification succès
-      history.replace("/invoices");
+      if (editing) {
+        const response = await axios.put("http://localhost:8000/api/invoices/" + id, {...invoice, customer: `/api/customers/${invoice.customer}`});
+        // TODO : Flash notification succès
+
+        console.log(response);
+      } else {
+        const response = await axios.post(
+          "http://localhost:8000/api/invoices",
+          {
+            ...invoice,
+            customer: `/api/customers/${invoice.customer}`,
+          }
+        );
+        // Flash notification succès
+        history.replace("/invoices");
+      }
     } catch ({ response }) {
-      
       const { violations } = response.data;
       if (violations) {
         const apiErrors = {};
@@ -72,7 +104,9 @@ const InvoicePage = ({ history }) => {
 
   return (
     <>
-      <h1>Création d'une facture</h1>
+      {(editing && <h1>Modification d'une facture</h1>) || (
+        <h1>Création d'une facture</h1>
+      )}
       <form onSubmit={handleSubmit}>
         <Field
           name="amount"
