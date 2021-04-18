@@ -19,6 +19,7 @@ import CustomerPage from './pages/CustomerPage';
 import HomePage from './pages/HomePage';
 import InvoicesPage from './pages/InvoicesPage';
 import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
 import AuthAPI from "./services/authAPI";
 // any CSS you import will output into a single css file (app.css in this case)
 import './styles/app.css';
@@ -45,6 +46,7 @@ const App = () => {
                 < NavbarWithRouter />
                 <main className="container pt-5">
                     <Switch>
+                        <Route path="/register" component={RegisterPage} />
                         <Route path="/login" component={LoginPage} />
                         <PrivateRoute path="/invoices/:id" component={InvoicePage} />
                         <PrivateRoute path="/invoices" component={InvoicesPage} />
