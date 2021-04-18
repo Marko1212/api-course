@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Field from "../components/forms/Field";
+import UsersAPI from "../services/usersAPI";
 
-const RegisterPage = (props) => {
+const RegisterPage = ({history}) => {
   const [user, setUser] = useState({
     firstName: "",
     lastName: "",
@@ -26,10 +27,41 @@ const RegisterPage = (props) => {
     setUser({ ...user, [name]: value });
   };
 
-  const handleSubmit = (event) => {
+  //Gestion de la soumission
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log(user);
-  };
+
+    const apiErrors = {}; 
+
+    if (user.password !== user.passwordConfirm) {
+        apiErrors.passwordConfirm = "Votre confirmation de mot de passe n'est pas conforme avec le mot de passe original";
+        setErrors(apiErrors);
+        return;
+    }
+
+    try {
+      await UsersAPI.register(user);
+      setErrors({});
+      // TODO : Flash succès
+      history.replace("/login");
+      
+   
+    } catch (error) {
+    
+      const {violations} = error.response.data;
+
+      if (violations) {
+         
+          violations.forEach(violation => {
+              apiErrors[violation.propertyPath] = violation.message;
+          });
+          setErrors(apiErrors);
+    }
+
+    // TODO : Flash erreur
+   
+  }
+}
 
   return (
     <>

@@ -60,12 +60,14 @@ const CustomerPage = ({ match, history }) => {
       if (editing) {
         await CustomersAPI.update(id, customer);
         // TODO : Flash notification de succès
+        setErrors({});
       } else {
         await CustomersAPI.create(customer);
         // TODO : Flash notification de succès
+        setErrors({});
         history.replace("/customers");
       }
-      setErrors({});
+      
     } catch ({ response }) {
       const { violations } = response.data;
       if (violations) {
