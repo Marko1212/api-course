@@ -2,6 +2,7 @@ import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
+import TableLoader from "../components/loaders/TableLoader";
 import Pagination from "../components/Pagination";
 import InvoicesAPI from "../services/invoicesAPI";
 
@@ -21,6 +22,7 @@ const InvoicesPage = (props) => {
   const [invoices, setInvoices] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
   const itemsPerPage = 10;
 
   // Récupération des invoices auprès de l'API
@@ -28,6 +30,7 @@ const InvoicesPage = (props) => {
     try {
       const data = await InvoicesAPI.findAll();
       setInvoices(data);
+      setLoading(false);
     } catch (error) {
       toast.error("Erreur lors du chargement des factures !");
     }
@@ -111,7 +114,7 @@ const InvoicesPage = (props) => {
             <th></th>
           </tr>
         </thead>
-        <tbody>
+        {!loading && <tbody>
           {paginatedInvoices.map((invoice) => (
             <tr key={invoice.id}>
               <td>{invoice.chrono}</td>
@@ -147,8 +150,10 @@ const InvoicesPage = (props) => {
               </td>
             </tr>
           ))}
-        </tbody>
+        </tbody> }
       </table>
+
+      {loading && <TableLoader />}
 
       <Pagination
         currentPage={currentPage}

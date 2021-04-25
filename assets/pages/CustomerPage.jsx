@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import Field from "../components/forms/Field";
+import FormContentLoader from "../components/loaders/FormContentLoader";
 import CustomersAPI from "../services/customersAPI";
 
 const CustomerPage = ({ match, history }) => {
@@ -21,6 +22,7 @@ const CustomerPage = ({ match, history }) => {
     company: "",
   });
 
+  const [loading, setLoading] = useState(false);
   const [editing, setEditing] = useState(false);
 
   // Récupération du customer en fonction de l'identifiant
@@ -30,6 +32,7 @@ const CustomerPage = ({ match, history }) => {
         id
       );
       setCustomer({ firstName, lastName, email, company });
+      setLoading(false);
     } catch (error) {
      
       toast.error("Le client n'a pas pu être chargé");
@@ -41,6 +44,7 @@ const CustomerPage = ({ match, history }) => {
   // Chargement du customer si besoin au chargement du composant ou au changement de l'identifiant
   useEffect(() => {
     if (id !== "new") {
+      setLoading(true);
       setEditing(true);
       fetchCustomer(id);
     }
@@ -91,7 +95,9 @@ const CustomerPage = ({ match, history }) => {
         <h1>Modification du client</h1>
       )}
 
-      <form onSubmit={handleSubmit}>
+    {loading && <FormContentLoader />}
+
+    {!loading && <form onSubmit={handleSubmit}>
         <Field
           name="lastName"
           label="Nom de famille"
@@ -132,7 +138,7 @@ const CustomerPage = ({ match, history }) => {
             Retour à la liste
           </Link>
         </div>
-      </form>
+      </form> }
     </>
   );
 };
