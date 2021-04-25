@@ -24,6 +24,7 @@ import AuthAPI from "./services/authAPI";
 // any CSS you import will output into a single css file (app.css in this case)
 import './styles/app.css';
 import InvoicePage from './pages/InvoicePage';
+import { ToastContainer } from 'react-toastify';
 
 
 
@@ -56,6 +57,7 @@ const App = () => {
                     </Switch>
                 </main>
             </HashRouter>
+            <ToastContainer />
         </AuthContext.Provider>)
 };
 
