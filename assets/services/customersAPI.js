@@ -1,5 +1,6 @@
 import axios from "axios";
 import Cache from "./cache";
+import { CUSTOMERS_API } from "../config";
 
 async function findAll() {
     const cachedCustomers = await Cache.get("customers");
@@ -7,24 +8,11 @@ async function findAll() {
     if (cachedCustomers) return cachedCustomers;
 
     return axios
-        .get("http://localhost:8000/api/customers")
+        .get(CUSTOMERS_API)
         .then((response) => {
             const customers = response.data["hydra:member"];
             Cache.set("customers", customers);
             return customers;
-        });
-}
-
-function deleteCustomer(id) {
-
-    return axios
-        .delete("http://localhost:8000/api/customers/" + id).then(async response => {
-            const cachedCustomers = await Cache.get("customers");
-    
-            if (cachedCustomers) {
-                Cache.set("customers", cachedCustomers.filter(c => c.id !== id));
-            }
-            return response;
         });
 }
 
@@ -34,7 +22,7 @@ async function find(id) {
     if (cachedCustomer) return cachedCustomer;
 
     return axios
-        .get("http://localhost:8000/api/customers/" + id)
+        .get(CUSTOMERS_API + "/" + id)
         .then((response) => {
             const customer = response.data;
             Cache.set("customers." + id, customer);
@@ -43,10 +31,23 @@ async function find(id) {
 
 }
 
+function deleteCustomer(id) {
+
+    return axios
+        .delete(CUSTOMERS_API + "/" + id).then(async response => {
+            const cachedCustomers = await Cache.get("customers");
+    
+            if (cachedCustomers) {
+                Cache.set("customers", cachedCustomers.filter(c => c.id !== id));
+            }
+            return response;
+        });
+}
+
 
 function update(id, customer) {
     return axios.put(
-        "http://localhost:8000/api/customers/" + id,
+        CUSTOMERS_API + "/" + id,
         customer
     ).then(async response => {
 
@@ -69,7 +70,7 @@ function update(id, customer) {
 
 function create(customer) {
     return axios.post(
-        "http://localhost:8000/api/customers",
+        CUSTOMERS_API,
         customer
     ).then(async response => {
         const cachedCustomers = await Cache.get("customers");
