@@ -1,5 +1,6 @@
 import axios from "axios";
 import { INVOICES_API } from "../config";
+import Cache from "./cache";
 
 function findAll() {
     return axios
@@ -9,7 +10,10 @@ function findAll() {
 
 function deleteInvoice(id) {
     return axios
-        .delete(INVOICES_API + "/" + id);
+        .delete(INVOICES_API + "/" + id).then(response => {
+            Cache.invalidate("customers");
+            return response;
+        });
 }
 
 function find(id) {
@@ -19,7 +23,10 @@ function find(id) {
 }
 
 function update(id, invoice) {
-    return axios.put(INVOICES_API + "/" + id, { ...invoice, customer: `/api/customers/${invoice.customer}` });
+    return axios.put(INVOICES_API + "/" + id, { ...invoice, customer: `/api/customers/${invoice.customer}` }).then(response => {
+        Cache.invalidate("customers");
+        return response;
+    });
 }
 
 function create(invoice) {
@@ -29,7 +36,10 @@ function create(invoice) {
             ...invoice,
             customer: `/api/customers/${invoice.customer}`,
         }
-    );
+    ).then(response => {
+        Cache.invalidate("customers");
+        return response;
+    });
 }
 
 export default {
